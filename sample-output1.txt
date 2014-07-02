@@ -1,0 +1,90 @@
+Adding batch of 2 parent docs
+
+Running query: Null Query, All Docs
+         with: *:*
+Matched: 7
+Doc # 1
+	id=part01
+	name=wheels
+	content_type=[part]
+Doc # 2
+	id=part02
+	name=engine
+	content_type=[part]
+Doc # 3
+	id=part03
+	name=brakes
+	content_type=[part]
+Doc # 4
+	id=product01
+	name=car
+	content_type=[product]
+	_version_=1471220857287213056
+Doc # 5
+	id=part04
+	name=wheels
+	content_type=[part]
+Doc # 6
+	id=part05
+	name=flaps
+	content_type=[part]
+Doc # 7
+	id=product02
+	name=truck
+	content_type=[product]
+	_version_=1471220857291407360
+
+Running query: All Products
+         with: *:*, Filter: content_type:product
+Matched: 2
+Doc # 1
+	id=product01
+	name=car
+	content_type=[product]
+	_version_=1471220857287213056
+Doc # 2
+	id=product02
+	name=truck
+	content_type=[product]
+	_version_=1471220857291407360
+
+Running query: All Parts
+         with: *:*, Filter: content_type:part
+Matched: 5
+Doc # 1
+	id=part01
+	name=wheels
+	content_type=[part]
+Doc # 2
+	id=part02
+	name=engine
+	content_type=[part]
+Doc # 3
+	id=part03
+	name=brakes
+	content_type=[part]
+Doc # 4
+	id=part04
+	name=wheels
+	content_type=[part]
+Doc # 5
+	id=part05
+	name=flaps
+	content_type=[part]
+
+Running query: Wheels for Cars
+         with: name:wheels, Filter: {!child of="content_type:product"}name:car
+Matched: 1
+Doc # 1
+	id=part01
+	name=wheels
+	content_type=[part]
+
+Running query: Products with Flaps
+         with: *:*, Filter: {!parent which="content_type:product"}name:flaps
+Matched: 1
+Doc # 1
+	id=product02
+	name=truck
+	content_type=[product]
+	_version_=1471220857291407360

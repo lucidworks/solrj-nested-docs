@@ -11,7 +11,7 @@ Requires:
         could run on Windows if proper classpath is set
 
 Just want to look?
-    Just view the files NestedDocs.java and sample-output.txt
+    Just view the files NestedDocs1.java and sample-output1.txt
 
 To actually run...
 
@@ -24,7 +24,7 @@ Setup Solr:
 
 Run this example:
     Be in this main directory
-    ./jr.sh   # jr = "java run"
+    ./jr1.sh   # jr = "java run"
     # Ignore warnings starting with "SLF4J: ...", this is just SolrJ logging nonsense.
 
 Recompile:
