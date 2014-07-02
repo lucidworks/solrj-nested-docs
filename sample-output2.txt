@@ -1,0 +1,284 @@
+Adding batch of 2 parent docs
+
+Test: Null Query, All Docs
+	Search: *:*
+Matched: 15
+Doc # 1
+	id=part01
+	name=wheels
+	content_type=[part]
+Doc # 2
+	id=part02
+	name=engine
+	content_type=[part]
+Doc # 3
+	id=part03
+	name=brakes
+	content_type=[part]
+Doc # 4
+	id=product01
+	name=car
+	content_type=[product]
+	_version_=1472484808421539840
+Doc # 5
+	id=part04
+	name=wheels
+	content_type=[part]
+Doc # 6
+	id=part05
+	name=flaps
+	content_type=[part]
+Doc # 7
+	id=product02
+	name=truck
+	content_type=[product]
+	_version_=1472484808424685568
+Doc # 8
+	id=jj_car1
+	content_type=[car]
+	make_t=Honda
+	model_t=Accord
+Doc # 9
+	id=jj_car2
+	content_type=[car]
+	make_t=Nissan
+	model_t=Maxima
+Doc # 10
+	id=jj_bike1
+	content_type=[bike]
+	make_t=Yamaha
+	model_t=Passion
+Query URL:
+http://localhost:8983/solr/collection1/select?q=*%3A*&fl=*
+
+Test: All People
+	Search: *:*
+	Filter: content_type:person
+Matched: 2
+Doc # 1
+	id=john_jones
+	content_type=[person]
+	first_name_t=John
+	last_name_t=Jones
+	states_t=California Nevada Idaho Maine
+	history_t=safe accident accident accident accident accident
+	_version_=1472484842236018688
+Doc # 2
+	id=satish_smith
+	content_type=[person]
+	first_name_t=Satish
+	last_name_t=Smith
+	states_t=California Texas California Maine Vermont Connecticut
+	history_t=safe safe safe safe safe safe safe safe accident
+	_version_=1472484842239164416
+Query URL:
+http://localhost:8983/solr/collection1/select?q=*%3A*&fq=content_type%3Aperson&fl=*
+
+Test: All Cars
+	Search: *:*
+	Filter: content_type:car
+Matched: 3
+Doc # 1
+	id=jj_car1
+	content_type=[car]
+	make_t=Honda
+	model_t=Accord
+Doc # 2
+	id=jj_car2
+	content_type=[car]
+	make_t=Nissan
+	model_t=Maxima
+Doc # 3
+	id=ss_car1
+	content_type=[car]
+	make_t=Peugeot
+	model_t=iOn
+Query URL:
+http://localhost:8983/solr/collection1/select?q=*%3A*&fq=content_type%3Acar&fl=*
+
+Test: All Bikes
+	Search: *:*
+	Filter: content_type:bike
+Matched: 3
+Doc # 1
+	id=jj_bike1
+	content_type=[bike]
+	make_t=Yamaha
+	model_t=Passion
+Doc # 2
+	id=jj_bike2
+	content_type=[bike]
+	make_t=Peugeot
+	model_t=Vivacity
+Doc # 3
+	id=ss_bike1
+	content_type=[bike]
+	make_t=Honda
+	model_t=Spree
+Query URL:
+http://localhost:8983/solr/collection1/select?q=*%3A*&fq=content_type%3Abike&fl=*
+
+Test: People who own both a Honda *car* and a Peugeot *bike*
+	Search: *:*
+	Filter: {!parent which="content_type:person"}(content_type:car AND make_t:Honda) OR (content_type:bike AND make_t:Peugeot)
+Matched: 1
+Doc # 1
+	id=john_jones
+	content_type=[person]
+	first_name_t=John
+	last_name_t=Jones
+	states_t=California Nevada Idaho Maine
+	history_t=safe accident accident accident accident accident
+	_version_=1472484842236018688
+Query URL:
+http://localhost:8983/solr/collection1/select?q=*%3A*&fq=%7B%21parent+which%3D%22content_type%3Aperson%22%7D%28content_type%3Acar+AND+make_t%3AHonda%29+OR+%28content_type%3Abike+AND+make_t%3APeugeot%29&fl=*
+
+Test: All cars owned by Mr. Jones
+	Search: content_type:car
+	Filter: {!child of="content_type:person"}last_name_t:jones
+Matched: 2
+Doc # 1
+	id=jj_car1
+	content_type=[car]
+	make_t=Honda
+	model_t=Accord
+Doc # 2
+	id=jj_car2
+	content_type=[car]
+	make_t=Nissan
+	model_t=Maxima
+Query URL:
+http://localhost:8983/solr/collection1/select?q=content_type%3Acar&fq=%7B%21child+of%3D%22content_type%3Aperson%22%7Dlast_name_t%3Ajones&fl=*
+
+Test: People who own a Honda car and Peugeot bike, and include the *matching* vehicles in results
+	Search: *:*
+	Filter: {!parent which=$parent_filter v=$child_filter}
+	Fields: *,[child parentFilter=$parent_filter childFilter=$child_filter]
+	Param: parent_filter=content_type:person
+	Param: child_filter=(content_type:car AND make_t:Honda) OR (content_type:bike AND make_t:Peugeot)
+Matched: 1
+Doc # 1
+	id=john_jones
+	content_type=[person]
+	first_name_t=John
+	last_name_t=Jones
+	states_t=California Nevada Idaho Maine
+	history_t=safe accident accident accident accident accident
+	_version_=1472484842236018688
+	Child doc:
+		id=jj_car1
+		content_type=[car]
+		make_t=Honda
+		model_t=Accord
+	Child doc:
+		id=jj_bike2
+		content_type=[bike]
+		make_t=Peugeot
+		model_t=Vivacity
+Query URL:
+http://localhost:8983/solr/collection1/select?q=*%3A*&fq=%7B%21parent+which%3D%24parent_filter+v%3D%24child_filter%7D&fl=*%2C%5Bchild+parentFilter%3D%24parent_filter+childFilter%3D%24child_filter%5D&parent_filter=content_type%3Aperson&child_filter=%28content_type%3Acar+AND+make_t%3AHonda%29+OR+%28content_type%3Abike+AND+make_t%3APeugeot%29
+
+Test: eDismax1: Drivers matching accidents and/or California, no joins
+	Search: California accident report
+	Param: defType=edismax
+	Param: qf=history_t states_t
+Matched: 2
+Doc # 1
+	id=john_jones
+	content_type=[person]
+	first_name_t=John
+	last_name_t=Jones
+	states_t=California Nevada Idaho Maine
+	history_t=safe accident accident accident accident accident
+	_version_=1472484842236018688
+Doc # 2
+	id=satish_smith
+	content_type=[person]
+	first_name_t=Satish
+	last_name_t=Smith
+	states_t=California Texas California Maine Vermont Connecticut
+	history_t=safe safe safe safe safe safe safe safe accident
+	_version_=1472484842239164416
+Query URL:
+http://localhost:8983/solr/collection1/select?q=California+accident+report&fl=*&defType=edismax&qf=history_t+states_t
+
+Test: eDismax2: Drivers matching accidents and/or California, no joins, boost on State
+	Search: California accident report
+	Param: defType=edismax
+	Param: qf=history_t states_t^100
+Matched: 2
+Doc # 1
+	id=satish_smith
+	content_type=[person]
+	first_name_t=Satish
+	last_name_t=Smith
+	states_t=California Texas California Maine Vermont Connecticut
+	history_t=safe safe safe safe safe safe safe safe accident
+	_version_=1472484842239164416
+Doc # 2
+	id=john_jones
+	content_type=[person]
+	first_name_t=John
+	last_name_t=Jones
+	states_t=California Nevada Idaho Maine
+	history_t=safe accident accident accident accident accident
+	_version_=1472484842236018688
+Query URL:
+http://localhost:8983/solr/collection1/select?q=California+accident+report&fl=*&defType=edismax&qf=history_t+states_t%5E100
+
+Test: eDismax3: Drivers matching accidents and/or California, and all of their vehicles, boost on State
+	Search: California accident report
+	Filter: {!parent which=$parent_filter}
+	Fields: *,[child parentFilter=$parent_filter]
+	Param: parent_filter=content_type:person
+	Param: defType=edismax
+	Param: qf=history_t states_t^100
+Matched: 2
+Doc # 1
+	id=satish_smith
+	content_type=[person]
+	first_name_t=Satish
+	last_name_t=Smith
+	states_t=California Texas California Maine Vermont Connecticut
+	history_t=safe safe safe safe safe safe safe safe accident
+	_version_=1472484842239164416
+	Child doc:
+		id=ss_car1
+		content_type=[car]
+		make_t=Peugeot
+		model_t=iOn
+	Child doc:
+		id=ss_bike1
+		content_type=[bike]
+		make_t=Honda
+		model_t=Spree
+Doc # 2
+	id=john_jones
+	content_type=[person]
+	first_name_t=John
+	last_name_t=Jones
+	states_t=California Nevada Idaho Maine
+	history_t=safe accident accident accident accident accident
+	_version_=1472484842236018688
+	Child doc:
+		id=jj_car1
+		content_type=[car]
+		make_t=Honda
+		model_t=Accord
+	Child doc:
+		id=jj_car2
+		content_type=[car]
+		make_t=Nissan
+		model_t=Maxima
+	Child doc:
+		id=jj_bike1
+		content_type=[bike]
+		make_t=Yamaha
+		model_t=Passion
+	Child doc:
+		id=jj_bike2
+		content_type=[bike]
+		make_t=Peugeot
+		model_t=Vivacity
+Query URL:
+http://localhost:8983/solr/collection1/select?q=California+accident+report&fq=%7B%21parent+which%3D%24parent_filter%7D&fl=*%2C%5Bchild+parentFilter%3D%24parent_filter%5D&parent_filter=content_type%3Aperson&defType=edismax&qf=history_t+states_t%5E100
