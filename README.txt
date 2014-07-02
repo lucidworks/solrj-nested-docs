@@ -1,12 +1,12 @@
 Solr Nested Documents and Block Joins
-v0.1, 6/17/2014, mark dot bennett at lucidworks dot com
+v0.2, 7/1/2014, mark dot bennett at lucidworks dot com
 
 Simple program to demonstrate Parent / Child joins in Solr
     using the SolrJ API
 
 Requires:
     Java 1.7 or above
-    Solr 4.5 or above; 4.8.1 used here
+    Solr 4.5 or above; 4.9.0 used here
     Script assumes Unix Bash Shell
         could run on Windows if proper classpath is set
 
@@ -16,9 +16,9 @@ Just want to look?
 To actually run...
 
 Setup Solr:
-    Download Solr (for example 4.8.1)
+    Download Solr (for example 4.9.0)
     Unzip / untar
-    cd solr-4.8.1/example
+    cd solr-4.9.0/example
     java -jar start.jar
     # Java code uses fields defined in the default schema.xml
 
